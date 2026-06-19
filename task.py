@@ -87,3 +87,33 @@ clf_preds = clf_model.predict(X_test_cls_scaled)
 print(f"Classification Accuracy: {accuracy_score(y_test_cls, clf_preds):.4f}\n")
 print("Detailed Classification Report:")
 print(classification_report(y_test_cls, clf_preds))
+# ==========================================
+# ADDING CLASSIFICATION ALGORITHM REQUIREMENT
+# ==========================================
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+
+print("\n--- Starting Classification Task ---")
+
+# 1. Create a binary category: 1 if house value is above median (Expensive), 0 if below (Affordable)
+median_value = df['median_house_value'].median()
+df['is_expensive'] = (df['median_house_value'] > median_value).astype(int)
+
+# 2. Define features and target for classification
+X_class = df.drop(['median_house_value', 'is_expensive', 'ocean_proximity'], axis=1, errors='ignore')
+y_class = df['is_expensive']
+
+# 3. Split the data into training and testing sets
+X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_class, y_class, test_size=0.2, random_state=42)
+
+# 4. Train a Logistic Regression Classifier
+classifier = LogisticRegression(max_iter=1000)
+classifier.fit(X_train_c, y_train_c)
+
+# 5. Evaluate the model
+y_pred_c = classifier.predict(X_test_c)
+accuracy = accuracy_score(y_test_c, y_pred_c)
+
+print(f"Classification Accuracy: {accuracy * 100:.2f}%")
+print("\nClassification Report:\n", classification_report(y_test_c, y_pred_c))
